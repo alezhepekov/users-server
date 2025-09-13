@@ -1,0 +1,17 @@
+{
+  "id": "ID",
+  "firstName": "FIRST_NAME",
+  "lastName": "LAST_NAME",
+  "middleName": "MIDDLE_NAME",
+  "dateOfBirth": "DATE_OF_BIRTH",
+  "gender": "GENDER",
+  "email": "EMAIL",
+  "phone": "PHONE",
+  "address": "ADDRESS",
+  "password": "PASSWORD",
+  "accountType": "ACCOUNT_TYPE",
+  "data": "DATA",
+  "picture": "PICTURE",
+  "creationTime": "CREATION_TIME",
+  "lastAccessTime": "LAST_ACCESS_TIME"
+}

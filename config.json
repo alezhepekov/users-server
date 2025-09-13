@@ -1,0 +1,10 @@
+{
+  "db": {
+    "host": "localhost",
+    "port": 5432,
+    "name": "MYORG-DB",
+    "user": "postgres",
+    "userPassword": "XXXXXxxxxx5"
+  },
+  "port": 3000
+}

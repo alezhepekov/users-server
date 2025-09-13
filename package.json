@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Server with postgres and express",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./dist/out-tsc/src/index.js",
+    "watch": "tsc --watch",
+    "build": "tsc"
+  },
+  "author": "a.lezhepekov@yandex.ru",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "@types/pg": "^8.15.5",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
+    "pg-pool": "^3.10.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

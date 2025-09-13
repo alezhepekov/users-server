@@ -132,7 +132,7 @@ app.get("/api/users", (req, res) => {
 
 app.post("/api/fill-users-table", (req, res) => {
   let query = "";
-  for (let i = 0; i < 10000 /*1000000*/; i++) {
+  for (let i = 0; i < config.db.insertLimit; i++) {
     const dateOfBirth: string = subDays(new Date(), Utils.randomIntFromInterval(0, 100 * 365)).toISOString();
     const names: string[] = ["Oliver", "Jack", "Harry", "Jacob", "George", "Noah", "Charlie", "Thomas", "Oscar", "William", "James", "Alexey", "Alexander", "Jhon", "Mike"];
     const accuntTypes: string[] = ["ADMIN", "NORMAL", "GUEST"];

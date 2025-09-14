@@ -51,9 +51,22 @@ app.get("/api/users", (req, res) => {
         const filterItems: string[] = filter.split(",");
         if (filterItems.length === 3) {
           const fieldName: string = fieldsMap[filterItems[0]];
-          // const typeOfComparation: string = filterItems[1];
+          const typeOfComparation: string = filterItems[1];
           const value: string = filterItems[2];
-          query += ` WHERE \"${fieldName}\" LIKE '%${value}%'`;
+          if (typeOfComparation === "in") {
+            query += ` WHERE \"${fieldName}\" IN (`;
+            value.split(";")?.forEach((currentValue: string, index: number, values: string[]) => {
+              query += `'${currentValue}'`;
+              if (index < values.length - 1) {
+                query += ',';
+              }
+            });
+            query += ')';
+          } else if (typeOfComparation === "like") {
+            query += ` WHERE \"${fieldName}\" LIKE '%${value}%'`;
+          } else if (typeOfComparation === "equal") {
+            query += ` WHERE \"${fieldName}\" = '${value}'`;
+          }
         }
       }
 
@@ -131,14 +144,19 @@ app.get("/api/users", (req, res) => {
 });
 
 app.post("/api/fill-users-table", (req, res) => {
+  const manNames: string[] = ["Oliver", "Jack", "Harry", "Jacob", "George", "Noah", "Charlie", "Thomas", "Oscar", "William", "James", "Alexey", "Alexander", "Jhon", "Mike"];
+  const womanNames: string[] = ["Olivia", "Amelia", "Isla", "Ava", "Emily"];
+  const accuntTypes: string[] = ["ADMIN", "NORMAL", "GUEST"];
+
   let query = "";
   for (let i = 0; i < config.db.insertLimit; i++) {
     const dateOfBirth: string = subDays(new Date(), Utils.randomIntFromInterval(0, 100 * 365)).toISOString();
-    const names: string[] = ["Oliver", "Jack", "Harry", "Jacob", "George", "Noah", "Charlie", "Thomas", "Oscar", "William", "James", "Alexey", "Alexander", "Jhon", "Mike"];
-    const accuntTypes: string[] = ["ADMIN", "NORMAL", "GUEST"];
+    const gender: string = i % 2 ? "MALE" : "FEMALE";
+    const name: string = i % 2 ? manNames[Utils.randomIntFromInterval(0, manNames.length - 1)] : womanNames[Utils.randomIntFromInterval(0, womanNames.length - 1)];
+    const accuntType: string = accuntTypes[Utils.randomIntFromInterval(0, accuntTypes.length - 1)];
     query += `
       INSERT INTO public."USERS"("FIRST_NAME","LAST_NAME","MIDDLE_NAME","DATE_OF_BIRTH","GENDER","EMAIL","PHONE","ADDRESS","PASSWORD","ACCOUNT_TYPE","DATA","PICTURE","CREATION_TIME","LAST_ACCESS_TIME")
-      VALUES ('${names[Utils.randomIntFromInterval(0, names.length - 1)]}',NULL,NULL,'${dateOfBirth}','MALE','user.${i + 1}@myorg.net','+${i + 1}',NULL,'${i + 1}','${accuntTypes[Utils.randomIntFromInterval(0, accuntTypes.length - 1)]}',NULL,NULL,now(),now());
+      VALUES ('${name}',NULL,NULL,'${dateOfBirth}','${gender}','user.${i + 1}@myorg.net','+${i + 1}',NULL,'${i + 1}','${accuntType}',NULL,NULL,now(),now());
     `;
   }
   let queryData: any[] = [];

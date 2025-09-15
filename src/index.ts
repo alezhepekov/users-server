@@ -5,9 +5,10 @@ import Pool from "pg-pool";
 import url from "url";
 import { subDays } from "date-fns";
 import { User } from "./types/user";
-import config from "../config.json";
-import fieldsMap from "./types/fields-map.json";
+import { Meta } from "./types/meta";
 import { Utils } from "./types/utils";
+import fieldsMap from "./types/fields-map.json";
+import config from "../config.json";
 
 process.on("uncaughtException", (err) => {
   console.error("Error", err.message, err.stack);
@@ -30,10 +31,10 @@ app.get("/api/users", (req, res) => {
   const urlObj = url.parse(req.url, true);
 
   let users: User[] = [];
-  let meta: any = {
-    pageIndex: null,
-    pageSize: null,
-    total: null
+  let meta: Meta = {
+    pageIndex: 1,
+    pageSize: 10,
+    total: 0
   };
 
   let query: string = "SELECT COUNT(*) FROM public.\"USERS\"";
@@ -46,40 +47,33 @@ app.get("/api/users", (req, res) => {
 
       query = "SELECT * FROM public.\"USERS\"";
       const urlObj = url.parse(req.url, true);
-      if (urlObj.query.filter) {
-        const filter: string = urlObj.query.filter as string;
-        const filterItems: string[] = filter.split(",");
-        if (filterItems.length === 3) {
-          const fieldName: string = fieldsMap[filterItems[0]];
-          const typeOfComparation: string = filterItems[1];
-          const value: string = filterItems[2];
-          if (typeOfComparation === "in") {
-            query += ` WHERE \"${fieldName}\" IN (`;
-            value.split(";")?.forEach((currentValue: string, index: number, values: string[]) => {
-              query += `'${currentValue}'`;
-              if (index < values.length - 1) {
-                query += ',';
-              }
-            });
-            query += ')';
-          } else if (typeOfComparation === "like") {
-            query += ` WHERE \"${fieldName}\" LIKE '%${value}%'`;
-          } else if (typeOfComparation === "equal") {
-            query += ` WHERE \"${fieldName}\" = '${value}'`;
-          }
+      if (urlObj.query.gender) {
+        if (Array.isArray(urlObj.query.gender) && urlObj.query.gender.length > 0) {
+          query += ` WHERE \"${fieldsMap["gender"]}\" IN (`;
+          query += urlObj.query.gender
+            .map(value => `'${value}'`)
+            .join(',');
+          query += ')';
+        } else {
+          query += ` WHERE \"${fieldsMap["gender"]}\" = '${urlObj.query.gender}'`;
+        }
+      }
+      if (urlObj.query.accountType) {
+        if (Array.isArray(urlObj.query.accountType) && urlObj.query.accountType.length > 0) {
+          query += ` WHERE \"${fieldsMap["accountType"]}\" IN (`;
+          query += urlObj.query.accountType
+            .map(value => `'${value}'`)
+            .join(',');
+          query += ')';
+        } else {
+          query += ` WHERE \"${fieldsMap["accountType"]}\" = '${urlObj.query.accountType}'`;
         }
       }
 
       let sortFieldDefault: string = "ID";
       let sortOrderDefault: string = "ASC";
-      if (urlObj.query.sort) {
-        const sort: string = urlObj.query.sort as string;
-        const sortItems: string[] = sort.split(",");
-        if (sortItems.length === 2) {
-          const fieldName: string = fieldsMap[sortItems[0]];
-          const direction: string = sortItems[1];
-          query += ` ORDER BY \"${fieldName}\" ${direction.toUpperCase()}`;
-        }
+      if (urlObj.query.sortField !== "null" && urlObj.query.sortOrder !== "null") {
+        query += ` ORDER BY \"${fieldsMap[urlObj.query.sortField as string]}\" ${urlObj.query.sortOrder === "ascend" ? "ASC" : "DESC"}`;
       } else {
         query += ` ORDER BY \"${sortFieldDefault}\" ${sortOrderDefault}`;
       }
@@ -87,7 +81,7 @@ app.get("/api/users", (req, res) => {
       if (urlObj.query.pageIndex && urlObj.query.pageSize) {
         const pageIndex: number = +urlObj.query.pageIndex;
         const pageSize: number = +urlObj.query.pageSize;
-        query += ` OFFSET ${pageIndex * pageSize} LIMIT ${pageSize}`;
+        query += ` OFFSET ${(pageIndex - 1) * pageSize} LIMIT ${pageSize}`;
         meta.pageIndex = pageIndex;
         meta.pageSize = pageSize;
       }

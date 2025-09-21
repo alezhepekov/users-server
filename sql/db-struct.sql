@@ -14,7 +14,7 @@ CREATE TABLE public."USERS"
     "FIRST_NAME" character varying(512),
     "LAST_NAME" character varying(512),
     "MIDDLE_NAME" character varying(512),
-    "DATE_OF_BIRTH" timestamp without time zone,
+    "DATE_OF_BIRTH" timestamp without time zone NOT NULL,
     "GENDER" character varying(6),
     "EMAIL" character varying(1024) NOT NULL,
     "PHONE" character varying(32),

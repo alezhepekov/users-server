@@ -1,12 +1,12 @@
 export class Utils {
-  static convertUTCDateToLocalDate(date: Date): Date {
+  static convertUTCDateToLocalDate(date: Date): Date | null {
     if (!date) {
       return null;
     }
     return new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
   }
 
-  static convertLocalDateToUTCDate(date: Date): Date {
+  static convertLocalDateToUTCDate(date: Date): Date | null {
     if (!date) {
       return null;
     }

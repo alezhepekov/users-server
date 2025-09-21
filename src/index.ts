@@ -145,8 +145,8 @@ app.post("/api/fill-users-table", (req, res) => {
   let query = "";
   for (let i = 0; i < config.db.insertLimit; i++) {
     const dateOfBirth: string = subDays(new Date(), Utils.randomIntFromInterval(0, 100 * 365)).toISOString();
-    const gender: string = i % 2 ? "MALE" : "FEMALE";
-    const name: string = i % 2 ? manNames[Utils.randomIntFromInterval(0, manNames.length - 1)] : womanNames[Utils.randomIntFromInterval(0, womanNames.length - 1)];
+    const gender: string = i % 2 === 0 ? "MALE" : "FEMALE";
+    const name: string = i % 2 === 0 ? manNames[Utils.randomIntFromInterval(0, manNames.length - 1)] : womanNames[Utils.randomIntFromInterval(0, womanNames.length - 1)];
     const accuntType: string = accuntTypes[Utils.randomIntFromInterval(0, accuntTypes.length - 1)];
     query += `
       INSERT INTO public."USERS"("FIRST_NAME","LAST_NAME","MIDDLE_NAME","DATE_OF_BIRTH","GENDER","EMAIL","PHONE","ADDRESS","PASSWORD","ACCOUNT_TYPE","DATA","PICTURE","CREATION_TIME","LAST_ACCESS_TIME")

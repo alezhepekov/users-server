@@ -46,28 +46,34 @@ app.get("/api/users", (req, res) => {
 
       query = "SELECT * FROM public.\"users\"";
       const urlObj = url.parse(req.url, true);
-      // TODO Переделать на построение оператора WHERE со сложным составным условием
+      let whereCondition: string = '';
       if (urlObj.query.gender) {
         if (Array.isArray(urlObj.query.gender) && urlObj.query.gender.length > 0) {
-          query += ` WHERE \"gender\" IN (`;
-          query += urlObj.query.gender
+          whereCondition += `\"gender\" IN (`;
+          whereCondition += urlObj.query.gender
             .map(value => `'${value}'`)
             .join(',');
-          query += ')';
+          whereCondition += ')';
         } else {
-          query += ` WHERE \"gender\" = '${urlObj.query.gender}'`;
+          whereCondition += `\"gender\" = '${urlObj.query.gender}'`;
         }
       }
       if (urlObj.query.accountType) {
+        if (whereCondition.length > 0) {
+          whereCondition += ' AND ';
+        }
         if (Array.isArray(urlObj.query.accountType) && urlObj.query.accountType.length > 0) {
-          query += ` WHERE \"accountType\" IN (`;
-          query += urlObj.query.accountType
+          whereCondition += `\"accountType\" IN (`;
+          whereCondition += urlObj.query.accountType
             .map(value => `'${value}'`)
             .join(',');
-          query += ')';
+          whereCondition += ')';
         } else {
-          query += ` WHERE \"accountType\" = '${urlObj.query.accountType}'`;
+          whereCondition += `\"accountType\" = '${urlObj.query.accountType}'`;
         }
+      }
+      if (whereCondition.length > 0) {
+        query += ` WHERE ${whereCondition}`;
       }
 
       let sortFieldDefault: string = "id";

@@ -10,7 +10,6 @@ export interface User {
   address?: string;
   password: string;
   accountType: string;
-  data?: any;
   picture?: string;
   creationTime?: string;
   lastAccessTime?: string;
